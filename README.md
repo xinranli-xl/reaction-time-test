@@ -2,15 +2,17 @@
 
 A command-line reaction time test written in Python. It waits a random amount of time, tells you to press Enter, measures how fast you respond over 5 rounds, catches false starts, and saves your results to a CSV file.
 
-This is Week 1 of **Project MOVE**, my 8-week plan to learn the technical skills behind interactive, adaptive systems for rehabilitation.
+This is Weeks 1 and 2 of **Project MOVE**, my 8-week plan to learn the technical skills behind interactive, adaptive systems for rehabilitation.
 
 ## Why I built this
 
-I'm interested in how technology can support movement and recovery: assistive technology, HCI, and rehabilitation. My long-term goal is a gamified physical therapy prototype, a game that responds to how a person moves.
+I'm a first-year Human Development major at Cornell, and I'm interested in how technology can support movement and recovery: assistive technology, HCI, and rehabilitation. My long-term goal is a gamified physical therapy prototype, a game that responds to how a person moves.
 
 Before I could build anything like that, I needed to understand the simplest loop behind any interactive system: **input → processing → output**. A reaction time test is the smallest version of that loop. The system gives a cue, the person responds, and the program measures the response and gives feedback.
 
-It is also where I started thinking about what "adaptive" means. A person's performance is not fixed. It changes from round to round and from day to day. Good therapy should not give everyone the same exercise; the challenge should meet the person where they are right now. 
+It is also where I started thinking about what "adaptive" means. A person's performance is not fixed. It changes from round to round and from day to day. Good therapy should not give everyone the same exercise; the challenge should meet the person where they are right now. My earlier work using drum circles to communicate with autistic children, building community rather than one-way help, shaped this view: start from the person, not from the tool.
+
+This version does not adapt yet. What it does is collect clean performance data (`results.csv`) that later versions can use to adjust difficulty.
 
 ## How it works
 
@@ -18,7 +20,7 @@ It is also where I started thinking about what "adaptive" means. A person's perf
 2. Print `Go!` and start the timer (`time.perf_counter()`).
 3. Wait for the player to press Enter (`input()`), then stop the timer.
 4. If the reaction is under 0.1 seconds, count it as a **false start**. The round does not count and is repeated.
-5. After 5 valid rounds, print the average, fastest and slowest times, and save every round to `results.csv`.
+5. After 5 valid rounds, print the average, fastest and slowest times, and append every round to `results.csv` with a timestamp. Each new run adds to the file instead of replacing it.
 
 The program is split into four functions, each with one job:
 
@@ -27,7 +29,7 @@ The program is split into four functions, each with one job:
 | `measure_reaction()` | Runs one round and returns the reaction time |
 | `run_test(rounds)` | Repeats rounds until enough valid ones are collected, returns a list of times |
 | `show_summary(times)` | Prints average, fastest and slowest |
-| `save_results(times, filename)` | Writes the times to a CSV file |
+| `save_results(times, filename)` | Appends the times with a timestamp to a CSV file (the header is written only once) |
 
 ## How to run
 
@@ -38,6 +40,15 @@ python3 reaction_test.py
 ```
 
 Press Enter as soon as you see `Go!`. Do not press early.
+
+To analyze your results, install pandas and matplotlib, then run the analysis script:
+
+```
+python3 -m pip install pandas matplotlib
+python3 analysis.py
+```
+
+`analysis.py` prints summary statistics and saves a plot as `reaction_times.png`.
 
 ## Example output
 
@@ -68,22 +79,10 @@ Results saved to results.csv
 `results.csv` looks like this:
 
 ```
-round,reaction_time
-1,0.318
-2,0.287
-3,0.301
-4,0.331
-5,0.283
-```
-
-## Project structure
-
-```
-reaction-time-test/
-├── reaction_test.py   # the main program
-├── practice/          # my Week 1 practice exercises
-├── .gitignore         # keeps results.csv and system files out of the repo
-└── README.md
+timestamp,round,reaction_time
+2026-11-26 01:28:20,1,0.738
+2026-11-26 01:28:20,2,0.457
+2026-11-26 01:28:20,3,0.741
 ```
 
 ## Results
@@ -97,6 +96,18 @@ I collected 25 trials (5 runs × 5 rounds) and analyzed them with pandas and mat
 - **Rounds:** Average reaction time did not show a clear trend across rounds 1 to 5, ranging from 0.414 to 0.774 seconds. With only five trials per round, I cannot draw a firm conclusion.
 
 **What this data cannot show:** All 25 trials were collected in five runs within about six minutes, late at night, so this data cannot show how performance changes across the day. The measurements also include keyboard and terminal delay. The 1.0-second cutoff for "slow trials" was my own choice, not a scientific standard.
+
+## Project structure
+
+```
+reaction-time-test/
+├── reaction_test.py     # the main program
+├── analysis.py          # pandas analysis and plot of results.csv
+├── reaction_times.png   # plot of all 25 trials
+├── practice/            # my Week 1 practice exercises
+├── .gitignore           # keeps results.csv and system files out of the repo
+└── README.md
+```
 
 ## What I learned
 
@@ -115,17 +126,19 @@ A bug that taught me a lot: in an earlier practice program I wrote `tries += tri
 
 Python skills practiced: variables, f-strings, conditionals, loops, functions and `return`, lists, file input/output, and the `time` and `random` modules.
 
+In Week 2 I added data analysis: reading CSV files with pandas, filtering rows, grouping data with `groupby`, and plotting with matplotlib.
+
 ## Limitations
 
 - It measures keyboard and terminal delay as well as my reaction, so it is not a precise measure of reaction time.
 - The 0.1 second false-start threshold is my own assumption, not a scientific cutoff.
 - Pressing Enter early is buffered by the terminal, so early presses are only caught by that same threshold.
 - It is text-only, always runs 5 rounds, and does not adapt to the player.
-- Results from one person in one session are too few to say anything about performance.
+- Results from one person in one short session are too few to say anything about performance.
 
 ## Next steps
 
-- Analyze `results.csv` with pandas and matplotlib (Week 2).
+- Collect data at different times of day and compare them (so far all data comes from one late-night session).
 - Build a simple graphical interface for the test.
 - Add adaptive difficulty, so the challenge changes based on how the player has been doing.
 - Explore pose detection with MediaPipe, to move from a key press to body movement.
