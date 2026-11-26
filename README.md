@@ -86,6 +86,18 @@ reaction-time-test/
 └── README.md
 ```
 
+## Results
+
+I collected 25 trials (5 runs × 5 rounds) and analyzed them with pandas and matplotlib (`analysis.py`).
+
+![Reaction time across all trials](reaction_times.png)
+
+- **Typical performance:** My typical reaction time was about 0.49 seconds (median 0.487 s), and the middle half of my 25 trials fell between 0.437 and 0.561 seconds.
+- **Effect of slow trials:** Two slow trials (1.666 s and 1.295 s) raised the mean from about 0.504 seconds (without them) to 0.582 seconds (with them), while the median was 0.487 seconds. Because a few slow trials can distort the mean, the median describes my typical performance better.
+- **Rounds:** Average reaction time did not show a clear trend across rounds 1 to 5, ranging from 0.414 to 0.774 seconds. With only five trials per round, I cannot draw a firm conclusion.
+
+**What this data cannot show:** All 25 trials were collected in five runs within about six minutes, late at night, so this data cannot show how performance changes across the day. The measurements also include keyboard and terminal delay. The 1.0-second cutoff for "slow trials" was my own choice, not a scientific standard.
+
 ## What I learned
 
 This project taught me a hands-on procedure for building an interactive setup from nothing:
