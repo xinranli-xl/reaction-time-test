@@ -1,5 +1,6 @@
 import time
 import random
+import os
 
 
 def measure_reaction():
@@ -10,7 +11,6 @@ def measure_reaction():
     input()
     end = time.perf_counter()
     return end - start
-
 
 def run_test(rounds):
     times = []
@@ -34,8 +34,10 @@ def show_summary(times):
 
 
 def save_results(times, filename):
-    with open(filename, "w") as f:
-        f.write("round,reaction_time\n")
+    file_exists = os.path.exists(filename)
+    with open(filename, "a") as f:
+        if not file_exists:
+            f.write("round,reaction_time\n")
         for i in range(len(times)):
             f.write(f"{i + 1},{round(times[i], 3)}\n")
 
