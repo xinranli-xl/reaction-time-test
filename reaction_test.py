@@ -1,6 +1,7 @@
 import time
 import random
 import os
+from datetime import datetime
 
 
 def measure_reaction():
@@ -35,11 +36,12 @@ def show_summary(times):
 
 def save_results(times, filename):
     file_exists = os.path.exists(filename)
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(filename, "a") as f:
         if not file_exists:
-            f.write("round,reaction_time\n")
+            f.write("timestamp,round,reaction_time\n")
         for i in range(len(times)):
-            f.write(f"{i + 1},{round(times[i], 3)}\n")
+            f.write(f"{timestamp},{i + 1},{round(times[i], 3)}\n")
 
 
 results = run_test(5)
